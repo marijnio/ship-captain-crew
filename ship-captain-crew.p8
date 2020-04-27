@@ -1,12 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 18
 __lua__
-player = {
-  ship = false,
-  captain = false,
-  crew = false,
-  cargo = 0
-  }
+player = { dice = {}  }
 
 function player:new (o)
  o = o or {}
@@ -17,18 +12,8 @@ end
 
 game = {}
 
-game.hand = {}
-
-function throw()
- hand = {}
- local i = 0
- while i<5 do
-	 die = flr(rnd(6) + 1)
-	 add(hand,die)
-	 i+=1
-	end
-	foreach(hand,print)
- return hand
+function roll_die()
+	return flr(rnd(6) + 1)
 end
 
 function contains(h,n)
@@ -42,25 +27,22 @@ function contains(h,n)
 end
 
 function _init()
- throw()
+ 
 end
 
 function _update()
  if btnp(❎) then
-  game.hand = throw()
-  
-  if contains(game.hand,6) then
-   player.ship = true
+  if #player.dice == 0 then
+	  local i = 0
+	  while i < 5 do
+	   add(player.dice, roll_die())
+	   i += 1
+	   printh("adding die...")
+	  end
+	 else
+	  -- handle rest
 	 end
-  if player.ship and contains(game.hand,5) then
-   player.captain = true  
-	 end
-  if player.captain and contains(game.hand,4) then
-	   player.crew = true
-	 end
-	 if player.crew then
 	 
-	 end
  end
 end
 
@@ -68,8 +50,8 @@ function draw_die(n,x,y)
  spr(n,x,y)
 end
 
-function draw_hand(hand,x,y)
- for i, v in pairs(hand) do
+function draw_dice(d,x,y)
+ for i, v in pairs(d) do
   draw_die(v,x,y)
   x=x+10
  end
@@ -78,7 +60,7 @@ end
 function _draw()
  cls()
  
- draw_hand(game.hand,10,10)
+ draw_dice(player.dice,10,10)
  
  print(player.stage,10,20)
 end
